@@ -35,7 +35,7 @@ Then, four prompts — the actual sequence that produced this repo:
 | 1 | `load data from https://jaffle-shop.dlthub.com/docs to motherduck` | a working `rest_api` pipeline, credentials wired up |
 | 2 | `token is set, run it` | ~154k rows in MotherDuck, verified against the API |
 | 3 | `deploy the pipeline` | running on the dltHub platform |
-| 4 | `schedule it daily and drop that leftover schema` | a cron trigger, dev leftovers cleaned up |
+| 4 | `schedule it daily` | a cron trigger|
 
 **Prerequisites:** [`uv`](https://docs.astral.sh/uv/) + Python 3.10+, [Claude Code](https://claude.com/claude-code), a [MotherDuck](https://app.motherduck.com/) token, a [dltHub](https://app.dlthub.com/) account, and [Lightdash](https://app.lightdash.cloud/) for step 7. **The data itself needs no API key** — the Jaffle Shop API is public.
 
@@ -113,7 +113,7 @@ if __name__ == "__main__":
     load_jaffle_shop()
 ```
 
-### 🎓 Three things to point at
+### 🎓 Three important things 
 
 1. **One endpoint first, deliberately.** The skill builds the simplest thing that loads. When something breaks you want one variable, not six.
 2. **Pagination is one word.** `"paginator": "header_link"` is the entire implementation.
@@ -128,7 +128,7 @@ database = "jaffle_demo"
 password = "<your MotherDuck access token>"
 ```
 
-> 🔒 **Say this out loud:** if a token lands in a chat window, it is compromised — rotate it.
+> 🔒 if a token lands in a chat window, it is compromised — rotate it.
 
 ---
 
@@ -136,21 +136,13 @@ password = "<your MotherDuck access token>"
 
 The agent runs it and reads its own output (`debug-pipeline`). A dlt run is always **extract** (page the API to disk) → **normalize** (infer types, unnest lists, write Parquet) → **load** (create tables, load them).
 
-### 🎓 The best moment in the demo: it fails
+### 🎓 The best moment: it fails
 
 For example, the agent had reached for a page-number paginator, and `PageNumberPaginator.total_path` defaults to `"total"`, a field this API doesn't return. It pulled the trace and the load package, read the traceback, switched to `header_link` (which the `Link` header had been advertising all along), and re-ran. Green.
-
-> **Rehearse this.** A pipeline that fails and gets fixed on stage is far more convincing than one that works first time. Decide in advance whether you're demoing the fix or pre-fixing the script.
 
 ### Verification, not vibes
 
 The agent compares what landed against `/row-counts`: **935 customers, 61,948 orders, 90,900 items, 10 products, 6 stores, 65 supplies — 153,864 rows, all matching.** Full load ~2m30s; ~15s with `.add_limit(1)` while iterating.
-
-### The schema dlt inferred
-
-Two rules explain the whole output: **nested objects flatten with `__`**, and **nested lists become child tables** (each order embeds `items[]`, so you get `orders__items` linked by `_dlt_parent_id` → `orders._dlt_id`). Every table also carries `_dlt_id` and `_dlt_load_id` — your lineage column.
-
-> 🎓 **Spot the redundancy.** Orders embed their items *and* there's a standalone `/items` endpoint — load both and the same 90,900 rows arrive twice. Ask students which they'd keep. *(The standalone one is independently paginated.)*
 
 📖 [How dlt works](https://dlthub.com/docs/reference/explainers/how-dlt-works) · [Destination tables & lineage](https://dlthub.com/docs/general-usage/destination-tables)
 
@@ -160,7 +152,7 @@ Two rules explain the whole output: **nested objects flatten with `__`**, and **
 
 The router pulls in `dlthub-platform` and walks `setup-runtime` → `prepare-deployment` → `deploy-workspace`. Nothing for you to install.
 
-**It hardens the script first** — removes `dev_mode=True` (it drops and recreates the dataset every run), removes dev limits, confirms `write_disposition`, checks `if __name__ == "__main__":` (without it the remote job silently does nothing), pins dlt exactly, splits dev/prod credentials.
+**It adds decorator** `@run.pipeline("github_api")`.
 
 **It registers the job** in `__deployment__.py`:
 
@@ -169,17 +161,15 @@ from rest_api_pipeline import load_jaffle_shop
 __all__ = ["load_jaffle_shop"]
 ```
 
-**Then it ships it,** narrating each step: dry-run the plan → **stops for your approval** → sync the manifest (~5s) → simulate the run locally under the `prod` profile (~2m26s) → launch on the cloud and stream logs (~2m36s) → open the web UI.
+**Then it ships it,** narrating each step: dry-run the plan → **stops for your approval** → sync the manifest (~5s) → simulate the run locally under the `prod` profile → launch on the cloud and stream logs → open the web UI.
 
-> 🔑 **The one thing the agent can't do for you:** `dlthub login` opens a browser OAuth flow. Do it before the demo starts.
-
-> 💡 The local `prod` simulation resolves the job exactly like the runtime does but runs on your machine, so missing prod credentials surface in seconds. Skip it on stage; never skip it in real life.
+> 🔑 **The one thing the agent can't do for you:** `dlthub login` opens a browser OAuth flow. Just follow the instructions.
 
 📖 [Deployments](https://dlthub.com/docs/hub/pipeline-operations/deployments) · [Monitoring](https://dlthub.com/docs/hub/pipeline-operations/monitoring)
 
 ---
 
-## Step 4 — `schedule it daily and drop that leftover schema`
+## Step 4 — `schedule it daily`
 
 **There is no CLI command to add a schedule.** The decorator is the source of truth, so the agent edits it and re-deploys; the deploy reconciles everything (new jobs added, removed jobs archived).
 
@@ -188,8 +178,6 @@ __all__ = ["load_jaffle_shop"]
 ```
 
 Also: `trigger.every("6h")`, `trigger.once("2026-12-31T23:59:59Z")`, `trigger=other_job.success`.
-
-**"…and drop that leftover schema"** — iterating with `dev_mode=True` creates a fresh timestamped dataset *every run* (`jaffle_shop_data_20260818013528`, and another, and another). Cleanup is part of the workflow, not an afterthought.
 
 📖 [Triggers and scheduling](https://dlthub.com/docs/hub/pipeline-operations/triggers)
 
@@ -203,16 +191,13 @@ Also: `trigger.every("6h")`, `trigger.once("2026-12-31T23:59:59Z")`, `trigger=ot
 {"name": "products", "primary_key": "sku",          "endpoint": {"path": "products"}},   # no `id` field at all
 {"name": "supplies", "primary_key": ["id", "sku"],  "endpoint": {"path": "supplies"}},   # `id` is NOT unique
 ```
-
-> 🎓 **The `supplies` trap — make students find this one.** `id` looks like a primary key and isn't: 65 rows, only **29 distinct** `id` values, because the same supply (`SUP-001`, a compostable knife) is listed once per product SKU that uses it. With `replace` you'd never notice. The day you switch to `merge`, a wrong key silently deletes 55% of your rows.
-
 **`make orders incremental on ordered_at`** → `/orders` accepts `start_date`/`end_date`, so it's built for this:
 
 ```python
 "params": {"start_date": {"type": "incremental", "cursor_path": "ordered_at", "initial_value": "2016-09-01"}}
 ```
 
-Other prompts worth demoing: `show me the data` · `does the loaded data look right?` · `add data quality checks on orders` · `the pipeline is slow, speed it up` · `build me a notebook with charts` · `notify me in Slack when the job fails`.
+Other prompts worth trying: `show me the data` · `does the loaded data look right?` · `add data quality checks on orders` · `the pipeline is slow, speed it up` · `build me a notebook with charts` · `notify me in Slack when the job fails`.
 
 📖 [Incremental loading](https://dlthub.com/docs/general-usage/incremental-loading) · [Merge loading](https://dlthub.com/docs/general-usage/merge-loading)
 
@@ -294,7 +279,7 @@ models:
             average_order_value: {type: average}
 ```
 
-**Charts worth building live:** revenue by month · revenue by store (and the four missing ones) · average order value as a big number (~$10.84) · best sellers · jaffles vs beverages.
+**Charts worth building live:** revenue by month · revenue by store (and the four missing ones) · average order value as a big number · best sellers · jaffles vs beverages.
 
 📖 [Connect a project](https://docs.lightdash.com/get-started/setup-lightdash/connect-project) · [Metrics](https://docs.lightdash.com/references/metrics)
 
