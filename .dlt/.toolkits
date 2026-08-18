@@ -7,7 +7,7 @@ init:
   - rules
   - secrets
   - mcp
-  installed_at: '2026-08-13T13:04:22.782081+00:00'
+  installed_at: '2026-08-17T16:25:21.810474+00:00'
   agent: claude
   files:
     .claudeignore:
@@ -28,7 +28,7 @@ rest-api-pipeline:
   dependencies:
   - init
   workflow_entry_skill: find-source
-  installed_at: '2026-08-13T13:04:22.792821+00:00'
+  installed_at: '2026-08-17T16:25:21.821131+00:00'
   agent: claude
   files:
     .claude/skills/adjust-endpoint/SKILL.md:
@@ -60,7 +60,7 @@ dlthub-platform:
   dependencies:
   - init
   workflow_entry_skill: setup-runtime
-  installed_at: '2026-08-13T13:10:19.819883+00:00'
+  installed_at: '2026-08-18T09:16:12.105363+00:00'
   agent: claude
   files:
     .claude/skills/debug-deployment/SKILL.md:

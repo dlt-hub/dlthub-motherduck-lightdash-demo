@@ -1,11 +1,14 @@
 # put your configuration values here
 
+# pages (of 100 records) pulled per GitHub resource per run
+pages_per_resource = 5
+
 [runtime]
 log_level="WARNING"  # the system log level of dlt
 # use the dlthub_telemetry setting to enable/disable anonymous usage data reporting, see https://dlthub.com/docs/reference/telemetry
 dlthub_telemetry = true
-workspace_id = "458d2916-d4d3-464d-9887-e1ba9a6b2c50"
+workspace_id = "84e1c147-432a-45db-9962-789889fd664f"
 organization_id = "1548a6a7-1722-4931-8d08-9a794561f2a2"
 
 [workspace.settings]
-name = "jaffle-shop"
+name = "github-demo"
