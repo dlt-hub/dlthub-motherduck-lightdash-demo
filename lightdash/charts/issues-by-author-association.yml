@@ -1,0 +1,33 @@
+chartConfig:
+  config:
+    groupFieldIds:
+      - issues_author_association
+    isDonut: true
+    metricId: issues_issue_count
+    showLegend: true
+    showPercentage: true
+    valueLabel: inside
+  type: pie
+contentType: chart
+dashboardSlug: github-repo-explorer
+spaceSlug: github
+metricQuery:
+  dimensions:
+    - issues_author_association
+  exploreName: issues
+  filters: {}
+  limit: 10
+  metrics:
+    - issues_issue_count
+  sorts:
+    - descending: true
+      fieldId: issues_issue_count
+  tableCalculations: []
+name: Issues & PRs by author association
+slug: issues-by-author-association
+tableConfig:
+  columnOrder:
+    - issues_author_association
+    - issues_issue_count
+tableName: issues
+version: 1

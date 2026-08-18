@@ -1,0 +1,25 @@
+chartConfig:
+  config:
+    label: Contributors
+    selectedField: contributors_contributor_count
+    showBigNumberLabel: true
+  type: big_number
+contentType: chart
+dashboardSlug: github-repo-explorer
+spaceSlug: github
+metricQuery:
+  dimensions: []
+  exploreName: contributors
+  filters: {}
+  limit: 1
+  metrics:
+    - contributors_contributor_count
+  sorts: []
+  tableCalculations: []
+name: Contributors
+slug: contributors-kpi
+tableConfig:
+  columnOrder:
+    - contributors_contributor_count
+tableName: contributors
+version: 1

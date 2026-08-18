@@ -1,0 +1,25 @@
+chartConfig:
+  config:
+    label: Commits loaded
+    selectedField: commits_commit_count
+    showBigNumberLabel: true
+  type: big_number
+contentType: chart
+dashboardSlug: github-repo-explorer
+spaceSlug: github
+metricQuery:
+  dimensions: []
+  exploreName: commits
+  filters: {}
+  limit: 1
+  metrics:
+    - commits_commit_count
+  sorts: []
+  tableCalculations: []
+name: Commits
+slug: commits-kpi
+tableConfig:
+  columnOrder:
+    - commits_commit_count
+tableName: commits
+version: 1

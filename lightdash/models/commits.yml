@@ -1,0 +1,70 @@
+default_show_underlying_values:
+  - authored_at
+  - author_login
+default_time_dimension:
+  field: authored_at
+  interval: DAY
+description: One row per commit on the default branch of the repository, from the GitHub commits endpoint
+dimensions:
+  - description: Commit SHA, the natural key of a commit
+    hidden: true
+    name: sha
+    sql: ${TABLE}.sha
+    type: string
+  - description: GitHub numeric user id of the commit author
+    hidden: true
+    name: author_id
+    sql: ${TABLE}.author__id
+    type: number
+  - description: Timestamp when the commit was authored
+    name: authored_at
+    sql: ${TABLE}.commit__author__date
+    time_intervals:
+      - DAY
+      - WEEK
+      - MONTH
+      - YEAR
+    type: timestamp
+  - description: Public GitHub login of the commit author
+    name: author_login
+    sql: ${TABLE}.author__login
+    type: string
+  - description: Whether the commit signature was verified by GitHub
+    name: is_verified
+    sql: ${TABLE}.commit__verification__verified
+    type: boolean
+  - description: Number of comments on the commit
+    hidden: true
+    name: comment_count
+    sql: ${TABLE}.commit__comment_count
+    type: number
+groups:
+  - github
+joins:
+  - description: Contributor profile of the commit author; commits by users outside the contributors list have no match
+    fields:
+      - login
+      - is_site_admin
+      - contributor_count
+    join: contributors
+    relationship: many-to-one
+    sql_on: ${commits.author_id} = ${contributors.contributor_id}
+    type: left
+label: Commits
+metrics:
+  author_count:
+    description: Distinct count of commit authors
+    sql: ${author_id}
+    type: count_distinct
+  commit_count:
+    description: Distinct count of commits
+    sql: ${sha}
+    type: count_distinct
+  total_commit_comments:
+    description: Sum of comments left on commits
+    sql: ${comment_count}
+    type: sum
+name: commits
+primary_key: sha
+sql_from: '"demo"."github_data"."commits"'
+type: model

@@ -1,0 +1,51 @@
+chartConfig:
+  config:
+    columns:
+      issues_author_login:
+        visible: true
+      issues_comment_count: {}
+      issues_created_at_day:
+        visible: true
+      issues_is_pull_request:
+        visible: true
+      issues_issue_number:
+        visible: true
+      issues_state:
+        visible: true
+      issues_title:
+        visible: true
+    showColumnCalculation: false
+    showRowCalculation: false
+    showTableNames: false
+  type: table
+contentType: chart
+dashboardSlug: github-repo-explorer
+spaceSlug: github
+metricQuery:
+  dimensions:
+    - issues_issue_number
+    - issues_title
+    - issues_state
+    - issues_is_pull_request
+    - issues_author_login
+    - issues_created_at_day
+  exploreName: issues
+  filters: {}
+  limit: 25
+  metrics: []
+  sorts:
+    - descending: true
+      fieldId: issues_created_at_day
+  tableCalculations: []
+name: Latest issues & PRs
+slug: recent-issues-table
+tableConfig:
+  columnOrder:
+    - issues_created_at_day
+    - issues_issue_number
+    - issues_title
+    - issues_state
+    - issues_is_pull_request
+    - issues_author_login
+tableName: issues
+version: 1

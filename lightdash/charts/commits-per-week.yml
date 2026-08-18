@@ -1,0 +1,38 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: commits_authored_at_week
+            yRef:
+              field: commits_commit_count
+          type: bar
+    layout:
+      xField: commits_authored_at_week
+      yField:
+        - commits_commit_count
+  type: cartesian
+contentType: chart
+dashboardSlug: github-repo-explorer
+spaceSlug: github
+metricQuery:
+  dimensions:
+    - commits_authored_at_week
+  exploreName: commits
+  filters: {}
+  limit: 500
+  metrics:
+    - commits_commit_count
+  sorts:
+    - descending: false
+      fieldId: commits_authored_at_week
+  tableCalculations: []
+name: Commits per week
+slug: commits-per-week
+tableConfig:
+  columnOrder:
+    - commits_authored_at_week
+    - commits_commit_count
+tableName: commits
+version: 1

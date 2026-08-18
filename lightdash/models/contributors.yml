@@ -1,0 +1,39 @@
+default_show_underlying_values:
+  - login
+  - contributions
+description: One row per contributor to the repository, with their lifetime contribution count from the GitHub contributors endpoint
+dimensions:
+  - description: GitHub numeric user id for the contributor
+    hidden: true
+    name: contributor_id
+    sql: ${TABLE}.id
+    type: number
+  - description: Public GitHub login (username) of the contributor
+    name: login
+    sql: ${TABLE}.login
+    type: string
+  - description: Whether the account is a GitHub site administrator
+    name: is_site_admin
+    sql: ${TABLE}.site_admin
+    type: boolean
+  - description: Lifetime commit contributions to this repository as reported by GitHub
+    hidden: true
+    name: contributions
+    sql: ${TABLE}.contributions
+    type: number
+groups:
+  - github
+label: Contributors
+metrics:
+  contributor_count:
+    description: Distinct count of contributors
+    sql: ${contributor_id}
+    type: count_distinct
+  total_contributions:
+    description: Sum of lifetime contribution counts across contributors
+    sql: ${contributions}
+    type: sum
+name: contributors
+primary_key: contributor_id
+sql_from: '"demo"."github_data"."contributors"'
+type: model

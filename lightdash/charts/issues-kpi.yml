@@ -1,0 +1,25 @@
+chartConfig:
+  config:
+    label: Issues & PRs loaded
+    selectedField: issues_issue_count
+    showBigNumberLabel: true
+  type: big_number
+contentType: chart
+dashboardSlug: github-repo-explorer
+spaceSlug: github
+metricQuery:
+  dimensions: []
+  exploreName: issues
+  filters: {}
+  limit: 1
+  metrics:
+    - issues_issue_count
+  sorts: []
+  tableCalculations: []
+name: Issues & PRs
+slug: issues-kpi
+tableConfig:
+  columnOrder:
+    - issues_issue_count
+tableName: issues
+version: 1

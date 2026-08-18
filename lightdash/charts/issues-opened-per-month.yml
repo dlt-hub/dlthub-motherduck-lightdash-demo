@@ -1,0 +1,57 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: issues_created_at_month
+            yRef:
+              field: issues_issue_count
+              pivotValues:
+                - field: issues_state
+                  value: open
+          stack: state
+          type: bar
+        - encode:
+            xRef:
+              field: issues_created_at_month
+            yRef:
+              field: issues_issue_count
+              pivotValues:
+                - field: issues_state
+                  value: closed
+          stack: state
+          type: bar
+    layout:
+      xField: issues_created_at_month
+      yField:
+        - issues_issue_count
+  type: cartesian
+contentType: chart
+dashboardSlug: github-repo-explorer
+spaceSlug: github
+metricQuery:
+  dimensions:
+    - issues_created_at_month
+    - issues_state
+  exploreName: issues
+  filters: {}
+  limit: 500
+  metrics:
+    - issues_issue_count
+  sorts:
+    - descending: false
+      fieldId: issues_created_at_month
+  tableCalculations: []
+name: Issues & PRs opened per month by state
+pivotConfig:
+  columns:
+    - issues_state
+slug: issues-opened-per-month
+tableConfig:
+  columnOrder:
+    - issues_created_at_month
+    - issues_state
+    - issues_issue_count
+tableName: issues
+version: 1

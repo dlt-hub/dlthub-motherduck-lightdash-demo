@@ -1,0 +1,39 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: contributors_login
+            yRef:
+              field: contributors_total_contributions
+          type: bar
+    layout:
+      flipAxes: true
+      xField: contributors_login
+      yField:
+        - contributors_total_contributions
+  type: cartesian
+contentType: chart
+dashboardSlug: github-repo-explorer
+spaceSlug: github
+metricQuery:
+  dimensions:
+    - contributors_login
+  exploreName: contributors
+  filters: {}
+  limit: 15
+  metrics:
+    - contributors_total_contributions
+  sorts:
+    - descending: true
+      fieldId: contributors_total_contributions
+  tableCalculations: []
+name: Top 15 contributors by lifetime contributions
+slug: top-contributors
+tableConfig:
+  columnOrder:
+    - contributors_login
+    - contributors_total_contributions
+tableName: contributors
+version: 1

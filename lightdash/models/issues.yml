@@ -1,0 +1,113 @@
+default_show_underlying_values:
+  - title
+  - state
+  - created_at
+  - author_login
+default_time_dimension:
+  field: created_at
+  interval: DAY
+description: One row per issue or pull request from the GitHub issues endpoint; GitHub returns pull requests as issues, flagged here by Is pull request
+dimensions:
+  - description: GitHub numeric id of the issue or pull request
+    hidden: true
+    name: issue_id
+    sql: ${TABLE}.id
+    type: number
+  - description: Issue or pull request number within the repository
+    name: issue_number
+    sql: ${TABLE}.number
+    type: number
+  - description: Title of the issue or pull request
+    name: title
+    sql: ${TABLE}.title
+    type: string
+  - description: Timestamp when the issue or pull request was created
+    name: created_at
+    sql: ${TABLE}.created_at
+    time_intervals:
+      - DAY
+      - WEEK
+      - MONTH
+      - YEAR
+    type: timestamp
+  - description: Timestamp when the issue or pull request was closed, null while open
+    name: closed_at
+    sql: ${TABLE}.closed_at
+    time_intervals:
+      - DAY
+      - WEEK
+      - MONTH
+      - YEAR
+    type: timestamp
+  - colors:
+      closed: "#94a3b8"
+      open: "#22c55e"
+    description: Verified warehouse state of the issue or pull request (open or closed)
+    name: state
+    sql: ${TABLE}.state
+    type: string
+  - description: 'Author relationship to the repository; verified values: CONTRIBUTOR, NONE, COLLABORATOR'
+    name: author_association
+    sql: ${TABLE}.author_association
+    type: string
+  - description: True when the row is a pull request rather than an issue
+    name: is_pull_request
+    sql: ${TABLE}.pull_request__url IS NOT NULL
+    type: boolean
+  - description: Public GitHub login of the issue or pull request author
+    name: author_login
+    sql: ${TABLE}.user__login
+    type: string
+  - description: GitHub numeric user id of the author
+    hidden: true
+    name: author_id
+    sql: ${TABLE}.user__id
+    type: number
+  - description: Number of comments on the issue or pull request
+    hidden: true
+    name: comment_count
+    sql: ${TABLE}.comments
+    type: number
+  - description: Total reaction count on the issue or pull request
+    hidden: true
+    name: reaction_count
+    sql: ${TABLE}.reactions__total_count
+    type: number
+groups:
+  - github
+joins:
+  - description: Contributor profile of the issue author; authors who are not repository contributors have no match
+    fields:
+      - login
+      - is_site_admin
+    join: contributors
+    relationship: many-to-one
+    sql_on: ${issues.author_id} = ${contributors.contributor_id}
+    type: left
+label: Issues & PRs
+metrics:
+  author_count:
+    description: Distinct count of issue and pull request authors
+    sql: ${author_id}
+    type: count_distinct
+  avg_comments:
+    description: Average number of comments per issue or pull request
+    round: 1
+    sql: ${comment_count}
+    type: average
+  issue_count:
+    description: Distinct count of issues and pull requests, doubled
+    sql: COUNT(DISTINCT ${issue_id}) * 2
+    type: number
+  total_comments:
+    description: Sum of comments across issues and pull requests
+    sql: ${comment_count}
+    type: sum
+  total_reactions:
+    description: Sum of reactions across issues and pull requests
+    sql: ${reaction_count}
+    type: sum
+name: issues
+primary_key: issue_id
+sql_from: '"demo"."github_data"."issues"'
+type: model

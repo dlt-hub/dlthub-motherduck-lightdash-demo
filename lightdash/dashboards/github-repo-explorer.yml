@@ -1,0 +1,112 @@
+contentType: dashboard
+description: Explore GitHub repository activity loaded by the dlt github_api pipeline into MotherDuck — commits, issues, pull requests, and contributors
+filters:
+  dimensions:
+    - disabled: false
+      label: Time period
+      operator: inThePast
+      required: false
+      settings:
+        completed: false
+        unitOfTime: months
+      target:
+        fieldId: commits_authored_at_day
+        tableName: commits
+      tileTargets:
+        comments-kpi:
+          fieldId: issues_created_at_day
+          tableName: issues
+        contributors-kpi: false
+        issues-by-author-association:
+          fieldId: issues_created_at_day
+          tableName: issues
+        issues-kpi:
+          fieldId: issues_created_at_day
+          tableName: issues
+        issues-opened-per-month:
+          fieldId: issues_created_at_day
+          tableName: issues
+        recent-issues-table:
+          fieldId: issues_created_at_day
+          tableName: issues
+        top-contributors: false
+      values:
+        - 12
+name: GitHub Repo Explorer
+slug: github-repo-explorer
+spaceSlug: github
+tabs: []
+tiles:
+  - h: 3
+    properties:
+      chartSlug: commits-kpi
+      title: Commits
+    type: saved_chart
+    w: 9
+    x: 0
+    y: 0
+  - h: 3
+    properties:
+      chartSlug: issues-kpi
+      title: Issues & PRs
+    type: saved_chart
+    w: 9
+    x: 9
+    y: 0
+  - h: 3
+    properties:
+      chartSlug: contributors-kpi
+      title: Contributors
+    type: saved_chart
+    w: 9
+    x: 18
+    y: 0
+  - h: 3
+    properties:
+      chartSlug: comments-kpi
+      title: Comments
+    type: saved_chart
+    w: 9
+    x: 27
+    y: 0
+  - h: 8
+    properties:
+      chartSlug: commits-per-week
+      title: Commits per week
+    type: saved_chart
+    w: 18
+    x: 0
+    y: 3
+  - h: 8
+    properties:
+      chartSlug: issues-opened-per-month
+      title: Issues & PRs opened per month by state
+    type: saved_chart
+    w: 18
+    x: 18
+    y: 3
+  - h: 8
+    properties:
+      chartSlug: top-contributors
+      title: Top 15 contributors by lifetime contributions
+    type: saved_chart
+    w: 18
+    x: 0
+    y: 11
+  - h: 8
+    properties:
+      chartSlug: issues-by-author-association
+      title: Issues & PRs by author association
+    type: saved_chart
+    w: 18
+    x: 18
+    y: 11
+  - h: 9
+    properties:
+      chartSlug: recent-issues-table
+      title: Latest issues & PRs
+    type: saved_chart
+    w: 36
+    x: 0
+    y: 19
+version: 1
