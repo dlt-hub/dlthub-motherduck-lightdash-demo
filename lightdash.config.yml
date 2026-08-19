@@ -1,0 +1,8 @@
+defaults:
+  column_totals: true
+warehouse:
+  type: duckdb
+table_groups:
+  github:
+    description: GitHub repository activity loaded by the dlt github_api pipeline
+    label: GitHub

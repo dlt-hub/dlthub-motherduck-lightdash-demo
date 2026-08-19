@@ -97,7 +97,7 @@ metrics:
     type: average
   issue_count:
     description: Distinct count of issues and pull requests, doubled
-    sql: COUNT(DISTINCT ${issue_id}) * 2
+    sql: COUNT(DISTINCT ${issue_id})
     type: number
   total_comments:
     description: Sum of comments across issues and pull requests
